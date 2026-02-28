@@ -16,9 +16,9 @@ export function SplashScreen({ onComplete, duration = 3000 }: SplashScreenProps)
     setMounted(true);
   }, []);
 
-  // Pre-generate random positions on client side
+  // Pre-generate random positions on client side only
   const particlePositions = useMemo(() => {
-    if (typeof window === 'undefined') return [];
+    if (!mounted) return [];
     return Array.from({ length: 20 }, () => ({
       x: Math.random() * 100, // percentage
       y: Math.random() * 100, // percentage
@@ -240,29 +240,31 @@ export function SplashScreen({ onComplete, duration = 3000 }: SplashScreenProps)
             </motion.div>
           </div>
 
-          {/* Particle Effects */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            {mounted && particlePositions.map((pos, i) => (
-              <motion.div
-                key={i}
-                initial={{ 
-                  opacity: 0,
-                  x: `${pos.x}vw`,
-                  y: `${pos.y}vh`,
-                }}
-                animate={{ 
-                  opacity: [0, 1, 0],
-                  scale: [0, 1, 0],
-                }}
-                transition={{ 
-                  duration: 2 + (i % 3),
-                  repeat: Infinity,
-                  delay: (i % 5) * 0.4,
-                }}
-                className="absolute w-1 h-1 rounded-full bg-yellow-400"
-              />
-            ))}
-          </div>
+          {/* Particle Effects - Only render on client side */}
+          {mounted && (
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+              {particlePositions.map((pos, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ 
+                    opacity: 0,
+                    x: `${pos.x}vw`,
+                    y: `${pos.y}vh`,
+                  }}
+                  animate={{ 
+                    opacity: [0, 1, 0],
+                    scale: [0, 1, 0],
+                  }}
+                  transition={{ 
+                    duration: 2 + (i % 3),
+                    repeat: Infinity,
+                    delay: (i % 5) * 0.4,
+                  }}
+                  className="absolute w-1 h-1 rounded-full bg-yellow-400"
+                />
+              ))}
+            </div>
+          )}
 
           {/* Version Badge */}
           <motion.div

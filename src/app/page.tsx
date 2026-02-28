@@ -23,32 +23,44 @@ export default function Home() {
   useEffect(() => {
     if (!mounted) return;
     
+    let isMounted = true;
+    
     async function detectLocation() {
       try {
         const location = await getGeoLocation();
-        setGeoLocation(location);
+        if (isMounted) {
+          setGeoLocation(location);
+        }
       } catch (error) {
         console.error('Failed to detect location:', error);
         // Default to India
-        setGeoLocation({
-          country: 'India',
-          countryCode: 'IN',
-          region: 'Maharashtra',
-          city: 'Mumbai',
-          latitude: 19.076,
-          longitude: 72.8777,
-          timezone: 'Asia/Kolkata',
-          currency: 'INR',
-          currencySymbol: '₹',
-          language: 'hi',
-          locale: 'hi-IN',
-        });
+        if (isMounted) {
+          setGeoLocation({
+            country: 'India',
+            countryCode: 'IN',
+            region: 'Maharashtra',
+            city: 'Mumbai',
+            latitude: 19.076,
+            longitude: 72.8777,
+            timezone: 'Asia/Kolkata',
+            currency: 'INR',
+            currencySymbol: '₹',
+            language: 'hi',
+            locale: 'hi-IN',
+          });
+        }
       } finally {
-        setIsLoadingGeo(false);
+        if (isMounted) {
+          setIsLoadingGeo(false);
+        }
       }
     }
 
     detectLocation();
+    
+    return () => {
+      isMounted = false;
+    };
   }, [mounted]);
 
   const handleSplashComplete = useCallback(() => {

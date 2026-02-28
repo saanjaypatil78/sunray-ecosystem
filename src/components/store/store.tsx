@@ -1,17 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { 
-  Search, ShoppingCart, Heart, Star, ChevronRight, 
-  Clock, Flame, TrendingUp, Package, Filter, Grid, List
+  Search, ShoppingCart, Heart, ChevronRight, 
+  Flame, TrendingUp, Package, Grid, List
 } from 'lucide-react';
 
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import { 
   PRODUCTS, 
@@ -19,16 +17,17 @@ import {
   getFeaturedProducts, 
   getProductsByCategory,
   searchProducts,
-  type Product,
   type ProductCategory 
 } from '@/lib/services/products';
 import { 
   formatPrice, 
-  convertPrice, 
-  getDealTimeRemaining,
   type GeoLocation 
 } from '@/lib/services/geolocation';
 import { ShopifySoldPopup } from '@/components/popups/sold-popup';
+import { ProductCard } from '@/components/store/product-card';
+import { DealCard } from '@/components/store/deal-card';
+import { CartDrawer } from '@/components/store/cart-drawer';
+import { useCartStore } from '@/store/cart-store';
 
 interface StoreProps {
   geoLocation?: GeoLocation | null;
@@ -69,53 +68,47 @@ const CATEGORIES: { id: ProductCategory; name: string }[] = [
 export function Store({ geoLocation }: StoreProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<ProductCategory | 'all'>('all');
-  const [cart, setCart] = useState<{ productId: string; quantity: number }[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [wishlist, setWishlist] = useState<string[]>([]);
   
   const currency = geoLocation?.currency || 'INR';
+  
+  // Use cart store
+  const { items: cartItems, addItem: addToCart, openCart, getTotalItems } = useCartStore();
+  const cartTotal = cartItems.reduce((sum, item) => {
+    const product = PRODUCTS.find(p => p.id === item.productId);
+    return sum + (product ? product.sellingPrice * item.quantity : 0);
+  }, 0);
 
-  // Filter products
-  const filteredProducts = searchQuery
-    ? searchProducts(searchQuery)
-    : selectedCategory === 'all'
-    ? PRODUCTS.filter(p => p.isActive)
-    : getProductsByCategory(selectedCategory);
+  // Memoized filtered products
+  const filteredProducts = useMemo(() => {
+    if (searchQuery) {
+      return searchProducts(searchQuery);
+    }
+    if (selectedCategory === 'all') {
+      return PRODUCTS.filter(p => p.isActive);
+    }
+    return getProductsByCategory(selectedCategory);
+  }, [searchQuery, selectedCategory]);
 
-  const dailyDeals = getDailyDeals();
-  const featuredProducts = getFeaturedProducts();
+  const dailyDeals = useMemo(() => getDailyDeals(), []);
+  const featuredProducts = useMemo(() => getFeaturedProducts(), []);
 
-  const toggleWishlist = (productId: string) => {
+  const toggleWishlist = useCallback((productId: string) => {
     setWishlist(prev => 
       prev.includes(productId) 
         ? prev.filter(id => id !== productId)
         : [...prev, productId]
     );
-  };
-
-  const addToCart = (productId: string) => {
-    setCart(prev => {
-      const existing = prev.find(item => item.productId === productId);
-      if (existing) {
-        return prev.map(item => 
-          item.productId === productId 
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
-      return [...prev, { productId, quantity: 1 }];
-    });
-  };
-
-  const cartTotal = cart.reduce((sum, item) => {
-    const product = PRODUCTS.find(p => p.id === item.productId);
-    return sum + (product ? product.sellingPrice * item.quantity : 0);
-  }, 0);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
       {/* Sold Popup */}
       <ShopifySoldPopup geoLocation={geoLocation} />
+
+      {/* Cart Drawer */}
+      <CartDrawer currency={currency} />
 
       {/* Header */}
       <header className="sticky top-0 z-40 glass-strong border-b border-border/50">
@@ -167,11 +160,11 @@ export function Store({ geoLocation }: StoreProps) {
               </Button>
 
               {/* Cart */}
-              <Button variant="ghost" size="icon" className="relative">
+              <Button variant="ghost" size="icon" className="relative" onClick={openCart}>
                 <ShoppingCart className="w-5 h-5" />
-                {cart.length > 0 && (
+                {getTotalItems() > 0 && (
                   <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center">
-                    {cart.length}
+                    {getTotalItems()}
                   </span>
                 )}
               </Button>
@@ -208,7 +201,7 @@ export function Store({ geoLocation }: StoreProps) {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-4 py-6 pb-24">
         {/* Daily Deals Section */}
         {dailyDeals.length > 0 && !searchQuery && (
           <section className="mb-8">
@@ -224,14 +217,11 @@ export function Store({ geoLocation }: StoreProps) {
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-              {PRODUCTS.filter(p => p.isDailyDeal).slice(0, 5).map(product => (
+              {dailyDeals.slice(0, 5).map(product => (
                 <DealCard 
                   key={product.id} 
                   product={product} 
                   currency={currency}
-                  onAddToCart={addToCart}
-                  onToggleWishlist={toggleWishlist}
-                  isWishlisted={wishlist.includes(product.id)}
                 />
               ))}
             </div>
@@ -270,9 +260,6 @@ export function Store({ geoLocation }: StoreProps) {
                   key={product.id} 
                   product={product} 
                   currency={currency}
-                  onAddToCart={addToCart}
-                  onToggleWishlist={toggleWishlist}
-                  isWishlisted={wishlist.includes(product.id)}
                 />
               ))}
             </div>
@@ -307,9 +294,6 @@ export function Store({ geoLocation }: StoreProps) {
                   key={product.id} 
                   product={product} 
                   currency={currency}
-                  onAddToCart={addToCart}
-                  onToggleWishlist={toggleWishlist}
-                  isWishlisted={wishlist.includes(product.id)}
                   listView={viewMode === 'list'}
                 />
               ))}
@@ -319,7 +303,7 @@ export function Store({ geoLocation }: StoreProps) {
       </main>
 
       {/* Floating Cart Summary */}
-      {cart.length > 0 && (
+      {cartItems.length > 0 && (
         <motion.div
           initial={{ y: 100 }}
           animate={{ y: 0 }}
@@ -328,251 +312,19 @@ export function Store({ geoLocation }: StoreProps) {
           <div className="container mx-auto flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">
-                {cart.length} item{cart.length > 1 ? 's' : ''} in cart
+                {getTotalItems()} item{getTotalItems() > 1 ? 's' : ''} in cart
               </p>
               <p className="text-xl font-bold gradient-text-gold">
                 {formatPrice(cartTotal, currency)}
               </p>
             </div>
-            <Button className="btn-gradient gap-2">
+            <Button className="btn-gradient gap-2" onClick={openCart}>
               <ShoppingCart className="w-4 h-4" />
-              Checkout
+              View Cart
             </Button>
           </div>
         </motion.div>
       )}
     </div>
-  );
-}
-
-// Product Card Component
-function ProductCard({ 
-  product, 
-  currency, 
-  onAddToCart, 
-  onToggleWishlist, 
-  isWishlisted,
-  listView = false 
-}: {
-  product: Product;
-  currency: string;
-  onAddToCart: (id: string) => void;
-  onToggleWishlist: (id: string) => void;
-  isWishlisted: boolean;
-  listView?: boolean;
-}) {
-  const convertedPrice = convertPrice(product.sellingPrice, currency);
-  const convertedMrp = convertPrice(product.mrp, currency);
-  const discount = Math.round(((product.mrp - product.sellingPrice) / product.mrp) * 100);
-
-  if (listView) {
-    return (
-      <Card className="glass overflow-hidden hover:border-primary/50 transition-colors">
-        <CardContent className="p-4 flex gap-4">
-          <div className="relative w-32 h-32 shrink-0">
-            <img
-              src={product.thumbnail}
-              alt={product.name}
-              className="w-full h-full object-cover rounded-lg"
-            />
-            {discount > 0 && (
-              <Badge className="absolute top-2 left-2 bg-green-500/80 text-white text-xs">
-                -{discount}%
-              </Badge>
-            )}
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-xs text-muted-foreground">{product.brand}</p>
-            <h3 className="font-semibold truncate">{product.name}</h3>
-            <div className="flex items-center gap-1 mt-1">
-              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-              <span className="text-sm font-medium">{product.rating}</span>
-              <span className="text-xs text-muted-foreground">({product.reviewCount})</span>
-            </div>
-            <div className="flex items-center gap-2 mt-2">
-              <span className="text-xl font-bold text-primary">{convertedPrice.formatted}</span>
-              {discount > 0 && (
-                <span className="text-sm text-muted-foreground line-through">
-                  {convertedMrp.formatted}
-                </span>
-              )}
-            </div>
-            <p className="text-xs text-green-400 mt-1">
-              {product.freeShipping ? 'Free Delivery' : `Delivery in ${product.deliveryDays} days`}
-            </p>
-            <div className="flex items-center gap-2 mt-3">
-              <Button size="sm" className="btn-gradient" onClick={() => onAddToCart(product.id)}>
-                Add to Cart
-              </Button>
-              <Button size="sm" variant="outline" onClick={() => onToggleWishlist(product.id)}>
-                <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <Card className="glass overflow-hidden group hover:border-primary/50 transition-all hover:shadow-lg hover:shadow-primary/10">
-      <CardContent className="p-0">
-        {/* Image */}
-        <div className="relative aspect-square overflow-hidden">
-          <img
-            src={product.thumbnail}
-            alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-          
-          {/* Badges */}
-          <div className="absolute top-2 left-2 flex flex-col gap-1">
-            {discount > 0 && (
-              <Badge className="bg-green-500/90 text-white text-xs">-{discount}%</Badge>
-            )}
-            {product.isFeatured && (
-              <Badge className="bg-primary/90 text-primary-foreground text-xs">HOT</Badge>
-            )}
-            {product.isDailyDeal && (
-              <Badge className="bg-red-500/90 text-white text-xs animate-pulse">DEAL</Badge>
-            )}
-          </div>
-
-          {/* Quick Actions */}
-          <div className="absolute top-2 right-2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <Button
-              size="icon"
-              variant="secondary"
-              className="w-8 h-8 rounded-full"
-              onClick={() => onToggleWishlist(product.id)}
-            >
-              <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
-            </Button>
-          </div>
-
-          {/* Quick Add */}
-          <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-            <Button 
-              size="sm" 
-              className="w-full btn-gradient"
-              onClick={() => onAddToCart(product.id)}
-            >
-              <ShoppingCart className="w-4 h-4 mr-1" />
-              Add to Cart
-            </Button>
-          </div>
-        </div>
-
-        {/* Info */}
-        <div className="p-3">
-          <p className="text-xs text-muted-foreground truncate">{product.brand}</p>
-          <h3 className="font-medium text-sm truncate mt-0.5">{product.name}</h3>
-          
-          {/* Rating */}
-          <div className="flex items-center gap-1 mt-1">
-            <div className="flex items-center">
-              <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-              <span className="text-xs font-medium ml-0.5">{product.rating}</span>
-            </div>
-            <span className="text-xs text-muted-foreground">({product.reviewCount.toLocaleString()})</span>
-          </div>
-
-          {/* Price */}
-          <div className="flex items-center gap-2 mt-2">
-            <span className="text-lg font-bold gradient-text-gold">
-              {convertedPrice.formatted}
-            </span>
-            {discount > 0 && (
-              <span className="text-xs text-muted-foreground line-through">
-                {convertedMrp.formatted}
-              </span>
-            )}
-          </div>
-
-          {/* Delivery Info */}
-          <p className="text-xs text-green-400 mt-1">
-            {product.freeShipping ? '🚚 Free Delivery' : `📦 ${product.deliveryDays} day delivery`}
-          </p>
-
-          {/* Sold Count */}
-          <p className="text-xs text-muted-foreground mt-1">
-            {product.totalSold.toLocaleString()}+ sold
-          </p>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-// Deal Card Component
-function DealCard({ 
-  product, 
-  currency, 
-  onAddToCart, 
-  onToggleWishlist, 
-  isWishlisted 
-}: {
-  product: Product;
-  currency: string;
-  onAddToCart: (id: string) => void;
-  onToggleWishlist: (id: string) => void;
-  isWishlisted: boolean;
-}) {
-  const convertedPrice = convertPrice(product.sellingPrice, currency);
-  const convertedMrp = convertPrice(product.mrp, currency);
-  const discount = Math.round(((product.mrp - product.sellingPrice) / product.mrp) * 100);
-  const timeRemaining = product.dealEndTime ? getDealTimeRemaining(product.dealEndTime) : null;
-
-  return (
-    <Card className="glass overflow-hidden border-red-500/30 hover:border-red-500/50 transition-colors relative">
-      {/* Deal Timer */}
-      {timeRemaining && (
-        <div className="absolute top-0 left-0 right-0 bg-red-500/90 text-white text-xs py-1 px-2 flex items-center justify-center gap-1">
-          <Clock className="w-3 h-3" />
-          Ends in {timeRemaining.hours}h {timeRemaining.minutes}m
-        </div>
-      )}
-
-      <CardContent className="p-0 pt-6">
-        {/* Image */}
-        <div className="relative aspect-square overflow-hidden">
-          <img
-            src={product.thumbnail}
-            alt={product.name}
-            className="w-full h-full object-cover"
-          />
-          <Badge className="absolute top-2 left-2 bg-red-500/90 text-white">
-            -{discount}% OFF
-          </Badge>
-          <Button
-            size="icon"
-            variant="secondary"
-            className="absolute top-2 right-2 w-8 h-8 rounded-full"
-            onClick={() => onToggleWishlist(product.id)}
-          >
-            <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
-          </Button>
-        </div>
-
-        {/* Info */}
-        <div className="p-3">
-          <h3 className="font-medium text-sm truncate">{product.name}</h3>
-          <div className="flex items-center gap-2 mt-2">
-            <span className="text-lg font-bold text-red-400">{convertedPrice.formatted}</span>
-            <span className="text-xs text-muted-foreground line-through">{convertedMrp.formatted}</span>
-          </div>
-          <p className="text-xs text-green-400 mt-1">
-            Save {formatPrice(product.mrp - product.sellingPrice, currency)}!
-          </p>
-          <Button 
-            size="sm" 
-            className="w-full mt-2 bg-red-500 hover:bg-red-600 text-white"
-            onClick={() => onAddToCart(product.id)}
-          >
-            Grab Deal
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
   );
 }
