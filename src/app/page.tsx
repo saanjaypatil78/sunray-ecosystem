@@ -2,108 +2,116 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Globe, Loader2 } from 'lucide-react';
 
-import { SplashScreen } from '@/components/splash/splash-screen';
 import { Store } from '@/components/store/store';
-import { getGeoLocation, type GeoLocation } from '@/lib/services/geolocation';
+import type { GeoLocation } from '@/lib/services/geolocation';
 
-export default function Home() {
-  const [geoLocation, setGeoLocation] = useState<GeoLocation | null>(null);
-  const [isLoadingGeo, setIsLoadingGeo] = useState(true);
+// Default location (Mumbai, India)
+const DEFAULT_LOCATION: GeoLocation = {
+  country: 'India',
+  countryCode: 'IN',
+  region: 'Maharashtra',
+  city: 'Mumbai',
+  latitude: 19.076,
+  longitude: 72.8777,
+  timezone: 'Asia/Kolkata',
+  currency: 'INR',
+  currencySymbol: '₹',
+  language: 'hi',
+  locale: 'hi-IN',
+};
+
+// Splash Screen Component
+function SplashScreen({ onComplete }: { onComplete: () => void }) {
+  useEffect(() => {
+    const timer = setTimeout(onComplete, 2500);
+    return () => clearTimeout(timer);
+  }, [onComplete]);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0D0D1A]">
+      {/* Background glow */}
+      <div className="absolute inset-0 bg-gradient-radial from-purple-900/20 via-transparent to-transparent" />
+      
+      {/* Main content */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        className="relative z-10 flex flex-col items-center"
+      >
+        {/* Logo */}
+        <motion.div
+          animate={{ 
+            scale: [1, 1.05, 1],
+            rotate: [0, 2, -2, 0]
+          }}
+          transition={{ 
+            duration: 2, 
+            repeat: Infinity,
+            ease: 'easeInOut'
+          }}
+          className="relative"
+        >
+          {/* Glow effect */}
+          <div className="absolute inset-0 blur-2xl bg-gradient-to-br from-yellow-400 via-teal-400 to-purple-500 opacity-50" />
+          
+          {/* Hexagon */}
+          <div className="relative w-24 h-24 clip-hexagon bg-gradient-to-br from-yellow-400 via-teal-400 to-purple-500 flex items-center justify-center">
+            <div className="w-20 h-20 clip-hexagon bg-[#0D0D1A] flex items-center justify-center">
+              <span className="text-2xl font-black bg-gradient-to-r from-yellow-400 via-teal-400 to-purple-500 bg-clip-text text-transparent">
+                BE
+              </span>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Brand name */}
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="mt-6 text-3xl font-black bg-gradient-to-r from-yellow-400 via-teal-400 to-purple-500 bg-clip-text text-transparent"
+        >
+          SUNRAY ECOSYSTEM
+        </motion.h1>
+
+        {/* Tagline */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="mt-2 text-sm text-gray-400 tracking-widest uppercase"
+        >
+          Investment & Vendor Platform
+        </motion.p>
+
+        {/* Loading bar */}
+        <motion.div
+          initial={{ opacity: 0, width: 0 }}
+          animate={{ opacity: 1, width: 200 }}
+          transition={{ delay: 0.7, duration: 1.5 }}
+          className="mt-6 h-1 rounded-full bg-gradient-to-r from-yellow-400 via-teal-400 to-purple-500"
+        />
+      </motion.div>
+    </div>
+  );
+}
+
+// Main Home Component with proper SSR handling
+function HomeContent() {
   const [showSplash, setShowSplash] = useState(true);
-  const [mounted, setMounted] = useState(false);
-
-  // Ensure client-side only rendering
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Detect user location on mount
-  useEffect(() => {
-    if (!mounted) return;
-    
-    let isMounted = true;
-    
-    async function detectLocation() {
-      try {
-        const location = await getGeoLocation();
-        if (isMounted) {
-          setGeoLocation(location);
-        }
-      } catch (error) {
-        console.error('Failed to detect location:', error);
-        // Default to India
-        if (isMounted) {
-          setGeoLocation({
-            country: 'India',
-            countryCode: 'IN',
-            region: 'Maharashtra',
-            city: 'Mumbai',
-            latitude: 19.076,
-            longitude: 72.8777,
-            timezone: 'Asia/Kolkata',
-            currency: 'INR',
-            currencySymbol: '₹',
-            language: 'hi',
-            locale: 'hi-IN',
-          });
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoadingGeo(false);
-        }
-      }
-    }
-
-    detectLocation();
-    
-    return () => {
-      isMounted = false;
-    };
-  }, [mounted]);
 
   const handleSplashComplete = useCallback(() => {
     setShowSplash(false);
   }, []);
-
-  // Show loading state until mounted (prevents hydration mismatch)
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="w-16 h-16 hexagon bg-gradient-to-br from-yellow-400 via-teal-400 to-purple-500 animate-pulse" />
-      </div>
-    );
-  }
 
   // Show splash screen first
   if (showSplash) {
     return <SplashScreen onComplete={handleSplashComplete} />;
   }
 
-  // Loading state while detecting location
-  if (isLoadingGeo) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center"
-        >
-          <div className="relative mb-6">
-            <div className="w-20 h-20 hexagon bg-gradient-to-br from-yellow-400 via-teal-400 to-purple-500 mx-auto animate-pulse" />
-            <Loader2 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 text-white animate-spin" />
-          </div>
-          <p className="text-muted-foreground flex items-center gap-2 justify-center">
-            <Globe className="w-4 h-4" />
-            Detecting your location...
-          </p>
-        </motion.div>
-      </div>
-    );
-  }
-
-  // Main store interface
+  // Show store
   return (
     <AnimatePresence mode="wait">
       <motion.div
@@ -111,8 +119,13 @@ export default function Home() {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
       >
-        <Store geoLocation={geoLocation} />
+        <Store geoLocation={DEFAULT_LOCATION} />
       </motion.div>
     </AnimatePresence>
   );
+}
+
+// Export with dynamic to prevent SSR
+export default function Home() {
+  return <HomeContent />;
 }

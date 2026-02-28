@@ -47,7 +47,7 @@ export const DealCard = memo(function DealCard({
     if (!product.dealEndTime) return;
     
     const updateTimer = () => {
-      const remaining = getDealTimeRemaining(product.dealEndTime);
+      const remaining = getDealTimeRemaining(product.dealEndTime ?? null);
       setTimeRemaining(remaining);
     };
     
