@@ -1,141 +1,200 @@
-# 🚀 Welcome to Z.ai Code Scaffold
+# 🌞 SUNRAY ECOSYSTEM
 
-A modern, production-ready web application scaffold powered by cutting-edge technologies, designed to accelerate your development with [Z.ai](https://chat.z.ai)'s AI-powered coding assistance.
+<div align="center">
 
-## ✨ Technology Stack
+![SUNRAY ECOSYSTEM](https://img.shields.io/badge/SUNRAY-ECOSYSTEM-FFD700?style=for-the-badge&labelColor=0D0D1A)
+![Version](https://img.shields.io/badge/Version-2.0-00CED1?style=for-the-badge&labelColor=0D0D1A)
+![License](https://img.shields.io/badge/License-MIT-8B5CF6?style=for-the-badge&labelColor=0D0D1A)
 
-This scaffold provides a robust foundation built with:
+**Investment & Vendor Platform with 15-25% Monthly Returns**
 
-### 🎯 Core Framework
-- **⚡ Next.js 16** - The React framework for production with App Router
-- **📘 TypeScript 5** - Type-safe JavaScript for better developer experience
-- **🎨 Tailwind CSS 4** - Utility-first CSS framework for rapid UI development
+[Features](#-features) • [Tech Stack](#-tech-stack) • [Getting Started](#-getting-started) • [Deployment](#-deployment)
 
-### 🧩 UI Components & Styling
-- **🧩 shadcn/ui** - High-quality, accessible components built on Radix UI
-- **🎯 Lucide React** - Beautiful & consistent icon library
-- **🌈 Framer Motion** - Production-ready motion library for React
-- **🎨 Next Themes** - Perfect dark mode in 2 lines of code
+</div>
 
-### 📋 Forms & Validation
-- **🎣 React Hook Form** - Performant forms with easy validation
-- **✅ Zod** - TypeScript-first schema validation
+---
 
-### 🔄 State Management & Data Fetching
-- **🐻 Zustand** - Simple, scalable state management
-- **🔄 TanStack Query** - Powerful data synchronization for React
-- **🌐 Fetch** - Promise-based HTTP request
+## 🏢 About
 
-### 🗄️ Database & Backend
-- **🗄️ Prisma** - Next-generation TypeScript ORM
-- **🔐 NextAuth.js** - Complete open-source authentication solution
+**SUNRAY ECOSYSTEM** is a comprehensive investment and vendor platform developed by **BRAVE ECOM PVT LTD**. It combines e-commerce, investment opportunities, and vendor management into a single, powerful platform.
 
-### 🎨 Advanced UI Features
-- **📊 TanStack Table** - Headless UI for building tables and datagrids
-- **🖱️ DND Kit** - Modern drag and drop toolkit for React
-- **📊 Recharts** - Redefined chart library built with React and D3
-- **🖼️ Sharp** - High performance image processing
+### Key Highlights
+- 💰 **15% Monthly Returns** for investors
+- 🏪 **25% Active Vendor Returns** with ₹100,000 fixed ROI
+- 🌐 **Global Platform** with IP-based localization
+- 🛍️ **Multi-source Products** from Amazon, eBay, AliExpress, Meesho, Blinkit, Zepto, IndiaMART
 
-### 🌍 Internationalization & Utilities
-- **🌍 Next Intl** - Internationalization library for Next.js
-- **📅 Date-fns** - Modern JavaScript date utility library
-- **🪝 ReactUse** - Collection of essential React hooks for modern development
+---
 
-## 🎯 Why This Scaffold?
+## ✨ Features
 
-- **🏎️ Fast Development** - Pre-configured tooling and best practices
-- **🎨 Beautiful UI** - Complete shadcn/ui component library with advanced interactions
-- **🔒 Type Safety** - Full TypeScript configuration with Zod validation
-- **📱 Responsive** - Mobile-first design principles with smooth animations
-- **🗄️ Database Ready** - Prisma ORM configured for rapid backend development
-- **🔐 Auth Included** - NextAuth.js for secure authentication flows
-- **📊 Data Visualization** - Charts, tables, and drag-and-drop functionality
-- **🌍 i18n Ready** - Multi-language support with Next Intl
-- **🚀 Production Ready** - Optimized build and deployment settings
-- **🤖 AI-Friendly** - Structured codebase perfect for AI assistance
+### 🛒 E-Commerce Store
+- **Product Categories**: FMCG, Electronics, Groceries, Personal Care, Household, and more
+- **Daily Deals**: Time-limited offers with vendor margin protection
+- **Shopify-style Popups**: Real-time sold notifications
+- **Multi-currency Support**: 30+ currencies with auto-conversion
+- **Multi-language Support**: 30+ languages with native display
 
-## 🚀 Quick Start
+### 💼 Investment Platform
+- **7 Investment Tiers**: From ₹1,000 to ₹10,00,000+
+- **15% Monthly Returns**: Guaranteed returns on investment
+- **6-Level Commission Structure**: Up to 20% referral commissions
+- **Royalty Ranks**: Bronze to Crown Ambassador
+
+### 🏪 Vendor Platform
+- **85/15 Revenue Split**: Vendors keep 85% of profits
+- **25% Active Returns**: For active vendors
+- **₹100,000 Fixed ROI**: Guaranteed vendor returns
+- **Product Management**: Easy listing and inventory control
+
+### 🌍 Global Features
+- **IP Geolocation**: Auto-detect user location
+- **Currency Conversion**: Real-time exchange rates
+- **Language Detection**: Native language display
+- **Timezone Support**: Local time display
+
+---
+
+## 🛠 Tech Stack
+
+| Category | Technologies |
+|----------|-------------|
+| **Framework** | Next.js 15 (App Router) |
+| **Language** | TypeScript |
+| **Styling** | Tailwind CSS |
+| **UI Components** | shadcn/ui |
+| **Animations** | Framer Motion |
+| **State Management** | Zustand |
+| **Form Validation** | React Hook Form + Zod |
+| **Icons** | Lucide React |
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+ or Bun
+- npm, yarn, or bun
+
+### Installation
 
 ```bash
+# Clone the repository
+git clone https://github.com/braveecom/sunray-ecosystem.git
+
+# Navigate to project directory
+cd sunray-ecosystem
+
 # Install dependencies
+npm install
+# or
 bun install
 
 # Start development server
-bun run dev
-
-# Build for production
-bun run build
-
-# Start production server
-bun start
+npm run dev
+# or
+bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to see your application running.
+### Build for Production
 
-## 🤖 Powered by Z.ai
+```bash
+# Build the application
+npm run build
 
-This scaffold is optimized for use with [Z.ai](https://chat.z.ai) - your AI assistant for:
+# Start production server
+npm run start
+```
 
-- **💻 Code Generation** - Generate components, pages, and features instantly
-- **🎨 UI Development** - Create beautiful interfaces with AI assistance  
-- **🔧 Bug Fixing** - Identify and resolve issues with intelligent suggestions
-- **📝 Documentation** - Auto-generate comprehensive documentation
-- **🚀 Optimization** - Performance improvements and best practices
+---
 
-Ready to build something amazing? Start chatting with Z.ai at [chat.z.ai](https://chat.z.ai) and experience the future of AI-powered development!
+## 📦 Deployment
+
+### Vercel (Recommended)
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/braveecom/sunray-ecosystem)
+
+1. Fork this repository
+2. Connect your GitHub account to Vercel
+3. Import the repository
+4. Deploy!
+
+### Environment Variables
+
+Create a `.env.local` file with:
+
+```env
+# Add your environment variables here
+NEXT_PUBLIC_APP_URL=https://your-domain.com
+```
+
+---
 
 ## 📁 Project Structure
 
 ```
-src/
-├── app/                 # Next.js App Router pages
-├── components/          # Reusable React components
-│   └── ui/             # shadcn/ui components
-├── hooks/              # Custom React hooks
-└── lib/                # Utility functions and configurations
+sunray-ecosystem/
+├── src/
+│   ├── app/                 # Next.js App Router
+│   │   ├── layout.tsx       # Root layout
+│   │   └── page.tsx         # Home page
+│   ├── components/
+│   │   ├── ui/              # shadcn/ui components
+│   │   ├── splash/          # Splash screen
+│   │   ├── store/           # E-commerce store
+│   │   ├── registration/    # User registration
+│   │   ├── investment/      # Investment plans
+│   │   ├── vendor/          # Vendor dashboard
+│   │   ├── commission/      # Commission display
+│   │   ├── dashboard/       # User dashboard
+│   │   └── popups/          # Notification popups
+│   ├── lib/
+│   │   ├── config/          # Configuration files
+│   │   ├── services/        # Services (geolocation, products)
+│   │   └── validations/     # Zod schemas
+│   └── store/               # Zustand store
+├── public/                  # Static assets
+└── download/                # Generated files
 ```
-
-## 🎨 Available Features & Components
-
-This scaffold includes a comprehensive set of modern web development tools:
-
-### 🧩 UI Components (shadcn/ui)
-- **Layout**: Card, Separator, Aspect Ratio, Resizable Panels
-- **Forms**: Input, Textarea, Select, Checkbox, Radio Group, Switch
-- **Feedback**: Alert, Toast (Sonner), Progress, Skeleton
-- **Navigation**: Breadcrumb, Menubar, Navigation Menu, Pagination
-- **Overlay**: Dialog, Sheet, Popover, Tooltip, Hover Card
-- **Data Display**: Badge, Avatar, Calendar
-
-### 📊 Advanced Data Features
-- **Tables**: Powerful data tables with sorting, filtering, pagination (TanStack Table)
-- **Charts**: Beautiful visualizations with Recharts
-- **Forms**: Type-safe forms with React Hook Form + Zod validation
-
-### 🎨 Interactive Features
-- **Animations**: Smooth micro-interactions with Framer Motion
-- **Drag & Drop**: Modern drag-and-drop functionality with DND Kit
-- **Theme Switching**: Built-in dark/light mode support
-
-### 🔐 Backend Integration
-- **Authentication**: Ready-to-use auth flows with NextAuth.js
-- **Database**: Type-safe database operations with Prisma
-- **API Client**: HTTP requests with Fetch + TanStack Query
-- **State Management**: Simple and scalable with Zustand
-
-### 🌍 Production Features
-- **Internationalization**: Multi-language support with Next Intl
-- **Image Optimization**: Automatic image processing with Sharp
-- **Type Safety**: End-to-end TypeScript with Zod validation
-- **Essential Hooks**: 100+ useful React hooks with ReactUse for common patterns
-
-## 🤝 Get Started with Z.ai
-
-1. **Clone this scaffold** to jumpstart your project
-2. **Visit [chat.z.ai](https://chat.z.ai)** to access your AI coding assistant
-3. **Start building** with intelligent code generation and assistance
-4. **Deploy with confidence** using the production-ready setup
 
 ---
 
-Built with ❤️ for the developer community. Supercharged by [Z.ai](https://chat.z.ai) 🚀
+## 🎨 Design System
+
+### Color Palette
+| Color | Hex | Usage |
+|-------|-----|-------|
+| Background | `#0D0D1A` | Primary background |
+| Gold | `#FFD700` | Primary accent |
+| Teal | `#00CED1` | Secondary accent |
+| Purple | `#8B5CF6` | Tertiary accent |
+
+### Features
+- Dark theme with glassmorphism
+- Responsive design (mobile-first)
+- Smooth animations
+- Accessible components
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 👥 Contact
+
+**BRAVE ECOM PVT LTD**
+
+- Website: [braveecom.com](https://braveecom.com)
+- Email: contact@braveecom.com
+- GitHub: [@braveecom](https://github.com/braveecom)
+
+---
+
+<div align="center">
+
+**Built with ❤️ by BRAVE ECOM PVT LTD**
+
+</div>

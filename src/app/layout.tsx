@@ -14,24 +14,22 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Z.ai Code Scaffold - AI-Powered Development",
-  description: "Modern Next.js scaffold optimized for AI-powered development with Z.ai. Built with TypeScript, Tailwind CSS, and shadcn/ui.",
-  keywords: ["Z.ai", "Next.js", "TypeScript", "Tailwind CSS", "shadcn/ui", "AI development", "React"],
-  authors: [{ name: "Z.ai Team" }],
+  title: "SUNRAY ECOSYSTEM | Investment & Vendor Platform",
+  description: "SUNRAY ECOSYSTEM - A comprehensive investment and vendor platform with 15-25% monthly returns, 6-level referral commission, and revenue sharing. Built by BRAVE ECOM PVT LTD.",
+  keywords: ["SUNRAY", "Investment", "Vendor", "Commission", "Returns", "Finance", "BRAVE ECOM", "ROI"],
+  authors: [{ name: "BRAVE ECOM PVT LTD" }],
   icons: {
-    icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
+    icon: "/logo.svg",
   },
   openGraph: {
-    title: "Z.ai Code Scaffold",
-    description: "AI-powered development with modern React stack",
-    url: "https://chat.z.ai",
-    siteName: "Z.ai",
+    title: "SUNRAY ECOSYSTEM",
+    description: "Investment & Vendor Platform with 15-25% Monthly Returns",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Z.ai Code Scaffold",
-    description: "AI-powered development with modern React stack",
+    title: "SUNRAY ECOSYSTEM",
+    description: "Investment & Vendor Platform with 15-25% Monthly Returns",
   },
 };
 
@@ -41,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className="dark">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
