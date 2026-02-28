@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 // User Types
 export interface User {
@@ -15,7 +15,7 @@ export interface User {
   status: 'RED' | 'GREEN';
   role: 'INVESTOR' | 'VENDOR' | 'ADMIN';
   rank: string;
-  createdAt: Date;
+  createdAt: string;
   kycStatus: 'PENDING' | 'VERIFIED' | 'REJECTED';
 }
 
@@ -25,8 +25,8 @@ export interface Investment {
   tier: string;
   amount: number;
   monthlyProfit: number;
-  startDate: Date;
-  nextPayoutDate: Date;
+  startDate: string;
+  nextPayoutDate: string;
   payoutsCompleted: number;
   totalPayouts: number;
   status: 'ACTIVE' | 'PENDING' | 'COMPLETED' | 'WITHDRAWN';
@@ -147,6 +147,7 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: 'sunray-storage',
+      storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         user: state.user,
         isAuthenticated: state.isAuthenticated,

@@ -1,22 +1,28 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Globe, Loader2, MapPin } from 'lucide-react';
+import { Globe, Loader2 } from 'lucide-react';
 
 import { SplashScreen } from '@/components/splash/splash-screen';
 import { Store } from '@/components/store/store';
 import { getGeoLocation, type GeoLocation } from '@/lib/services/geolocation';
-import { useAppStore } from '@/store/app-store';
 
 export default function Home() {
   const [geoLocation, setGeoLocation] = useState<GeoLocation | null>(null);
   const [isLoadingGeo, setIsLoadingGeo] = useState(true);
   const [showSplash, setShowSplash] = useState(true);
-  const { isAuthenticated, completeSplash } = useAppStore();
+  const [mounted, setMounted] = useState(false);
+
+  // Ensure client-side only rendering
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Detect user location on mount
   useEffect(() => {
+    if (!mounted) return;
+    
     async function detectLocation() {
       try {
         const location = await getGeoLocation();
@@ -43,12 +49,20 @@ export default function Home() {
     }
 
     detectLocation();
+  }, [mounted]);
+
+  const handleSplashComplete = useCallback(() => {
+    setShowSplash(false);
   }, []);
 
-  const handleSplashComplete = () => {
-    setShowSplash(false);
-    completeSplash();
-  };
+  // Show loading state until mounted (prevents hydration mismatch)
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-16 h-16 hexagon bg-gradient-to-br from-yellow-400 via-teal-400 to-purple-500 animate-pulse" />
+      </div>
+    );
+  }
 
   // Show splash screen first
   if (showSplash) {
